@@ -33,6 +33,10 @@ const handleErrors = (err) => {
   return errors;
 };
 
+const generateApiKey = () => {
+  return Math.random().toString(36).substr(2); // Generate a random string as an API key
+};
+
 // Initialize Redis client with explicit host and port
 const redisClient = createClient({
   password: '3XbgL5TjZDTXkOhlUGX9mqek7TDD8Dmc',
