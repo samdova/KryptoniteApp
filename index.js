@@ -6,7 +6,7 @@ import connectDB from './config/db.js';
 import colors from 'colors';
 
 import authRoutes from  './routes/authRoutes.js';
-// import fileRoutes from './routes/fileRoutes';
+import fileRoutes from './routes/fileRoutes.js';
 // import imageRoutes from './routes/imageRoutes';
 
 import dotenv from 'dotenv';
@@ -25,7 +25,7 @@ app.use(bodyParser.json());
 app.use(router);
 
 app.use('/api/auth', authRoutes);
-// app.use('/api/files', fileRoutes);
+app.use('/api/files', fileRoutes);
 // app.use('/api', imageRoutes);
 
 // Set port from environment variable, defaulting to 5000 if not provided

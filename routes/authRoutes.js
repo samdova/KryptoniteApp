@@ -11,9 +11,9 @@ router.get('/', (req, res) => {
 router.post('/register', userController.register);
 router.get('/confirm-email', userController.confirmEmail);
 router.post('/login', userController.login);
-// router.post('/verify-otp', userController.verifyOTP);
+router.post('/verify-otp', userController.verifyOTP);
 // router.get('/logout', userController.logout); 
-// router.post('/api-key/create', userController.createApiKey);
-// router.post('/api-key/invalidate', authenticate, userController.invalidateApiKey);
+router.post('/api-key/create', userController.createApiKey);
+router.post('/api-key/invalidate', userController.invalidateApiKey);
 
 export default router;

@@ -1,8 +1,37 @@
 import mongoose from 'mongoose';
 
-const fileSchema = new mongoose.Schema({
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  data: { type: String, required: true }
+const imageSchema = new mongoose.Schema({
+  data: {
+    type: String,
+    required: true
+  },
+  apiKey: {
+    type: String,
+    required: true
+  },
+  dateUploaded: {
+    type: Date,
+    default: Date.now
+  }
 });
 
-module.exports = mongoose.model('File', fileSchema);
+const fileSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  email: {
+    type: String,
+    required: true
+  },
+  dateCreated: {
+    type: Date,
+    default: Date.now
+  },
+  images: [imageSchema]
+});
+
+const File = mongoose.model('File', fileSchema);
+
+export default File;

@@ -76,19 +76,33 @@ const userController = {
     const { email } = req.body;
 
     try {
-      const user = new User({ email });
-      await user.save();
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+          throw new Error('Email already registered');
+      }
+
+      const apiKey = generateApiKey();
+      const newUser = new User({
+          email,
+          apiKeys: [{
+              key: apiKey,
+              version: 1,
+              invalidated: false,
+          }],
+      });
+
+      await newUser.save();
 
       const token = Math.floor(100000 + Math.random() * 900000).toString();
       await redisClient.set(email, token, 'EX', 300); // Store OTP in Redis with 5-minute expiration
 
-      const confirmUrl = `http://localhost:3000/api/auth/confirm-email?email=${email}&token=${token}`;
-      await sendEmail(email, 'Kryptonite Email Confirmation', `Please confirm your email by clicking the following link: ${confirmUrl}`);
+      const confirmUrl = `https://kryptoniteapp-lefa.onrender.com/api/auth/confirm-email?email=${email}&token=${token}`;
+      await sendEmail(email, 'Kryptonite Email Confirmation', `Please confirm your email by clicking the following link: ${confirmUrl} . The OTP expires in 5 mins`);
 
-      res.status(201).json({ user: user._id, message: 'Registered successfully. Please check your email to confirm your registration.' });
+      res.status(201).json({ user: newUser._id, message: 'Registered successfully. Please check your email to confirm your registration.' });
     } catch (err) {
-      const errors = handleErrors(err);
-      res.status(400).json({ errors });
+        const errors = handleErrors(err);
+        res.status(400).json({ errors });
     }
   }),
   confirmEmail: asyncHandler(async (req, res) => {
@@ -146,26 +160,71 @@ const userController = {
       res.status(400).json({ errors });
     }
   }),
+  verifyOTP: asyncHandler(async (req, res) => {
+    const { email, otp } = req.body;
 
-  // verifyOTP: asyncHandler(async (req, res) => {
-  //   const { email, otp } = req.body;
+    try {
+      const storedOtp = await redis.get(email);
 
-  //   try {
-  //     const storedOtp = await redis.get(email);
+      if (storedOtp !== otp) {
+        throw new Error('Invalid OTP');
+      }
 
-  //     if (storedOtp !== otp) {
-  //       throw new Error('Invalid OTP');
-  //     }
+      const token = uuidv4(); // Generate JWT or any token
+      // Optionally, store the token in the database or redis if you want to track active sessions
 
-  //     const token = uuidv4(); // Generate JWT or any token
-  //     // Optionally, store the token in the database or redis if you want to track active sessions
+      res.status(200).json({ token });
+    } catch (err) {
+      const errors = handleErrors(err);
+      res.status(400).json({ errors });
+    }
+  }),
+  createApiKey: asyncHandler(async (req, res) => {
+    const { email, apiKey } = req.body;
 
-  //     res.status(200).json({ token });
-  //   } catch (err) {
-  //     const errors = handleErrors(err);
-  //     res.status(400).json({ errors });
-  //   }
-  // })
+    try {
+        const user = await User.findOne({ email });
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        const newVersion = user.apiKeys.length + 1;
+        const newApiKey = { key: apiKey || uuidv4(), version: newVersion, invalidated: false };
+        user.apiKeys.push(newApiKey);
+
+        await user.save();
+        res.status(201).json({ apiKey: newApiKey });
+    } catch (err) {
+        const errors = handleErrors(err);
+        res.status(400).json({ errors });
+    }
+
+
+  }),
+  invalidateApiKey: asyncHandler(async (req, res) => {
+    const { email, apiKey } = req.body;
+
+  try {
+      const user = await User.findOne({ email });
+      if (!user) {
+          throw new Error('User not found');
+      }
+
+      const apiKeyToInvalidate = user.apiKeys.find(key => key.key === apiKey);
+      if (!apiKeyToInvalidate) {
+          throw new Error('API key not found');
+      }
+
+      apiKeyToInvalidate.invalidated = true;
+
+      await user.save();
+      res.status(200).json({ message: 'API key invalidated successfully' });
+  } catch (err) {
+    const errors = handleErrors(err);
+    res.status(400).json({ errors });
+  }
+
+  }),
 };
 
 export default userController;
