@@ -17,7 +17,7 @@ const handleErrors = (err) => {
 
   // Invalid or expired token
   if (err.message === 'Invalid or expired token') {
-    errors.email = 'Invalid or expired link';
+    errors.otp = 'Invalid or expired link';
   }
 
   // Duplicate error code
