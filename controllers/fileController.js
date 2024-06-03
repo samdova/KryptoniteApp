@@ -5,10 +5,11 @@ import multer from 'multer';
 
 // Multer configuration
 const storage = multer.memoryStorage();
-const upload = multer({ storage }).single('file'); // 'file' is the name of the input field in Postman
+const upload = multer({ storage }).single('file'); 
 
+// Error handler
 const handleErrors = (err) => {
-    console.error(err.message, err.code); // Improved error logging for troubleshooting
+    console.error(err.message, err.code); 
     let errors = { email: '', apiKey: '' };
 
     if (err.message === 'Email not registered') {
@@ -42,6 +43,7 @@ const handleErrors = (err) => {
 };
 
 const fileController = {
+    // uploading file
     uploadFile: asyncHandler(async (req, res) => {
         const { apikey } = req.headers;
 
@@ -103,7 +105,7 @@ const fileController = {
                 res.status(400).json({ errors });
             }
         });
-    }),
+    })
 };
 
 export default fileController;

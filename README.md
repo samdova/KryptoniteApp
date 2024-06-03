@@ -15,8 +15,11 @@ http:localhost:3000/api/auth/login/
 }
 
 
-http://localhost:3000/api/auth/register
-/confirm-email
+http://localhost:3000/api/auth/verify-otp
+{
+	"email": "tsn.code@gmail.com",
+	"otp": "907711"
+}
 
 http://localhost:3000/api-key/create
 {

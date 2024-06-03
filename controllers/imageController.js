@@ -2,10 +2,11 @@ import asyncHandler from 'express-async-handler';
 import File from '../models/fileModel.js';
 
 const imageController = {
+    // get all images
     getAllImages: asyncHandler(async (req, res) => {
         const files = await File.find().populate('user', 'email');
         
-        // Collect all images with their respective details
+        // Collect all images with their email, apikey and date uploaded
         const images = files.reduce((acc, file) => {
             const userImages = file.images.map(image => ({
                 data: image.data,
@@ -18,11 +19,11 @@ const imageController = {
 
         res.status(200).json(images);
     }),
-
+    // get image by id
     getImage: asyncHandler(async (req, res) => {
         const { id } = req.params;
         
-        // Find the file containing the image with the given id
+        // Find the file containing the image with the given unique file image id
         const file = await File.findOne({ 'images._id': id }).populate('user', 'email');
         
         if (!file) {
@@ -40,7 +41,7 @@ const imageController = {
         };
 
         res.status(200).json(response);
-    }),
+    })
 }
 
 export default imageController;

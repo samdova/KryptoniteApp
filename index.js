@@ -11,17 +11,18 @@ import imageRoutes from './routes/imageRoutes.js';
 
 import dotenv from 'dotenv';
 
+// connect .env
 dotenv.config();
 
 // Connect to MongoDB
 connectDB();
-
+ 
 // Create Express application
 const app = express();
+
+// Middleware Setup
 app.use(cors());
-
 app.use(bodyParser.json());
-
 app.use(router);
 
 app.use('/api/auth', authRoutes);
