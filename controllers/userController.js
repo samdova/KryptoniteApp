@@ -8,11 +8,16 @@ import { v4 as uuidv4 } from 'uuid';
 // Handle errors
 const handleErrors = (err) => {
   console.log(err.message, err.code);
-  let errors = { email: '' };
+  let errors = { email: '', otp: '' };
 
   // Incorrect email
   if (err.message === 'email not registered') {
     errors.email = 'Email does not exist';
+  }
+
+  // Invalid or expired token
+  if (err.message === 'Invalid or expired token') {
+    errors.email = 'Invalid or expired link';
   }
 
   // Duplicate error code
@@ -20,8 +25,6 @@ const handleErrors = (err) => {
     errors.email = 'Email already registered';
     return errors;
   }
-
-  
 
   // Validation errors
   if (err.message.includes('user validation failed')) {
@@ -104,7 +107,7 @@ const userController = {
       await redisClient.set(email, token, 'EX', 3600);
 
       const confirmUrl = `https://kryptoniteapp-lefa.onrender.com/api/auth/confirm-email?email=${email}&token=${token}`;
-      await sendEmail(email, 'Kryptonite Email Confirmation', `Please confirm your email by clicking the following link: ${confirmUrl} . The OTP expires in One hour`);
+      await sendEmail(email, 'Kryptonite Email Confirmation', `Please confirm your email by clicking the following link: ${confirmUrl} . The link expires in One hour`);
 
       res.status(201).json({ user: newUser._id, message: 'Registered successfully. Please check your email to confirm your registration.' });
     } catch (err) {
