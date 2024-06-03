@@ -7,7 +7,7 @@ import colors from 'colors';
 
 import authRoutes from  './routes/authRoutes.js';
 import fileRoutes from './routes/fileRoutes.js';
-// import imageRoutes from './routes/imageRoutes';
+import imageRoutes from './routes/imageRoutes.js';
 
 import dotenv from 'dotenv';
 
@@ -26,7 +26,7 @@ app.use(router);
 
 app.use('/api/auth', authRoutes);
 app.use('/api/files', fileRoutes);
-// app.use('/api', imageRoutes);
+app.use('/api', imageRoutes);
 
 // Set port from environment variable, defaulting to 5000 if not provided
 const PORT = process.env.PORT || 5000;

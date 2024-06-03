@@ -1,9 +1,9 @@
 import express from 'express';
-import ImageController from '../controllers/imageController';
+import imageController from '../controllers/imageController.js';
 
 const router = express.Router();
 
-router.get('/images', ImageController.getAllImages);
-router.get('/images/:id', ImageController.getImage);
+router.get('/images', imageController.getAllImages);
+router.get('/images/:id', imageController.getImage);
 
-module.exports = router;
+export default router; // Use export default for ES6 module

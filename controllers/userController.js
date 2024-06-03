@@ -97,11 +97,14 @@ const userController = {
 
       await newUser.save();
 
+      // Generate a new token
       const token = Math.floor(100000 + Math.random() * 900000).toString();
-      await redisClient.set(email, token, 'EX', 300); // Store OTP in Redis with 5-minute expiration
+
+      // Store the token in Redis with expiration time of 1 hour (3600 seconds)
+      await redisClient.set(email, token, 'EX', 3600);
 
       const confirmUrl = `https://kryptoniteapp-lefa.onrender.com/api/auth/confirm-email?email=${email}&token=${token}`;
-      await sendEmail(email, 'Kryptonite Email Confirmation', `Please confirm your email by clicking the following link: ${confirmUrl} . The OTP expires in 5 mins`);
+      await sendEmail(email, 'Kryptonite Email Confirmation', `Please confirm your email by clicking the following link: ${confirmUrl} . The OTP expires in One hour`);
 
       res.status(201).json({ user: newUser._id, message: 'Registered successfully. Please check your email to confirm your registration.' });
     } catch (err) {

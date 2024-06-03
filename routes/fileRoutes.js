@@ -3,6 +3,6 @@ import fileController from '../controllers/fileController.js'; // Add .js extens
 
 const router = express.Router();
 
-router.post('/upload/:apikey', fileController.uploadFile);
+router.post('/upload', fileController.uploadFile);
 
 export default router; // Use export default for ES6 module
